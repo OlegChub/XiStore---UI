@@ -1,9 +1,11 @@
 package web.pages;
 
 import org.openqa.selenium.By;
+import org.springframework.stereotype.Component;
 
+@Component
 public class LoginModal extends HomePage {
-    private static final By LOGIN_MODAL = By.id("modalLogin");
+    private static final By LOGIN_MODAL = By.id("modalLoginByEmail");
     private static final By LOGIN_FIELD = By.xpath("//input[@name='USER_LOGIN']");
     private static final By PASSWORD_FIELD = By.xpath("//input[@type='password']");
     private static final By BTN_SUBMIT = By.xpath("//input[@value='ВОЙТИ']");

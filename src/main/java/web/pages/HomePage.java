@@ -1,29 +1,31 @@
 package web.pages;
 
 import org.openqa.selenium.By;
-import web.driver.DriverProvider;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-import static web.constants.Constants.HOME_URL;
 
-
-public class HomePage extends BasePage {
-    private static final String HOME_PAGE_URL = HOME_URL;
-    private static final By PERSONAL_CABINET_ICON = By.className("navigation-cabinet");
-    private static final By MAIL_LINK = By.xpath("//span[@href='/personal/']");
+@Component
+public class HomePage extends BasePage{
+    @Value("${app.host}")
+    private String url;
+    private static final By PERSONAL_CABINET_ICON = By.xpath("//div[contains(@class,'block--user')]");
+    private static final By MAIL_LINK = By.xpath("//a[@href='/personal/']/span");
+    private static final By LOGIN_WITH_OTHER_OPTION = By.xpath("//a[@href='#modalLoginByEmail']");
     private static final By SEARCH_FIELD = By.id("title-search-input");
     private static final By SEARCH_BTN = By.className("input-search-button");
-
     private static final By PHONE_MENU_ITEM = By.xpath("(//a[@href='/catalog/telefony/'])[2]");
-    private static final By SHOW_ALL_MENU_ITEM = By.xpath("//span[text()='Смотреть всё из раздела']");
 
-
-    public HomePage openHomePage() {
-        DriverProvider.getDriver().get(HOME_PAGE_URL);
-        return this;
+    public void openHomePage() {
+        openPage(url);
     }
 
     public void clickOnPersonalCabinetIcon() {
         waitElementToBeClickable(PERSONAL_CABINET_ICON).click();
+    }
+
+    public void clickOnLoginWithOtherOption() {
+        waitElementToBeClickable(LOGIN_WITH_OTHER_OPTION).click();
     }
 
     public String getUserName() {
@@ -36,7 +38,6 @@ public class HomePage extends BasePage {
 
     private void submitSearchQuery() {
         findElement(SEARCH_BTN).click();
-        ;
     }
 
     public void doSearchByProductName(String productName) {
@@ -47,9 +48,4 @@ public class HomePage extends BasePage {
     public void clickOnPhoneMenuItem() {
         findElement(PHONE_MENU_ITEM).click();
     }
-
-    public void clickOnShowAllMenuItem() {
-        findElement(SHOW_ALL_MENU_ITEM).click();
-    }
-
 }

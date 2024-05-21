@@ -1,13 +1,15 @@
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.openqa.selenium.WebDriver;
-import web.driver.DriverProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import web.driver.DriverManager;
 
 public class BaseTest {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(DriverManager.class);
+
+    @Autowired
+    private DriverManager driverManager;;
 
     @BeforeEach
     public void beforeTestActions() {
@@ -16,8 +18,8 @@ public class BaseTest {
 
     @AfterEach
     public void afterTestActions() {
-        DriverProvider.quitDriver();
-        LOGGER.info("Test is finished");
+        driverManager.closeDriver();
+        LOGGER.info("Test has finished");
     }
 
 }
