@@ -1,7 +1,9 @@
 package web.pages;
 
 import org.openqa.selenium.By;
+import org.springframework.stereotype.Component;
 
+@Component
 public class SmartphoneProductsPage extends BasePage {
 
     private static final By SMARTPHONE_PRODUCT_PAGE_TITLE = By.xpath("//h1[text()='Смартфоны']");

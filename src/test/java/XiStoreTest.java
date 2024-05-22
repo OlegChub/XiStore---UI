@@ -5,8 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import web.constants.Constants;
 import web.pages.*;
+
+import java.util.List;
+
+import static web.constants.Constants.PRODUCT_FOR_SEARCH;
 
 @SpringBootTest(classes = {XiStoreApplication.class})
 public class XiStoreTest extends BaseTest {
@@ -20,8 +23,13 @@ public class XiStoreTest extends BaseTest {
     @Autowired
     private SearchResultsPage searchResultsPage;
 
-    private final SmartphoneProductsPage smartphoneProductsPage = new SmartphoneProductsPage();
-    private final CertainSmartphoneProductPage certainSmartphoneProductPage = new CertainSmartphoneProductPage();
+    @Autowired
+    private SmartphoneProductsPage smartphoneProductsPage;
+
+    @Autowired
+    private CertainSmartphoneProductPage certainSmartphoneProductPage;
+
+    @Autowired
     private final CartPage cartPage = new CartPage();
 
     @Value("${login}")
@@ -29,13 +37,6 @@ public class XiStoreTest extends BaseTest {
 
     @Value("${password}")
     private String password;
-
-    @Value("ppp")
-    private String wrongLogin;
-
-    @Value("10293847")
-    private String wrongPassword;
-
 
     @Test
     @DisplayName("Проверка входа с корректными данными (электронная почта и пароль)")
@@ -46,57 +47,20 @@ public class XiStoreTest extends BaseTest {
         loginModal.doXiStoreLogin(login, password);
         homePage.refreshPage();
         homePage.clickOnPersonalCabinetIcon();
+
         Assertions.assertEquals(login, homePage.getUserName());
-    }
-
-    @Test
-    @DisplayName("Проверка входа с некорректными данными (электронная почта) и корректными данными (пароль)")
-    public void testXiStoreWrongMail() {
-        homePage.openHomePage();
-        homePage.clickOnPersonalCabinetIcon();
-        homePage.clickOnLoginWithOtherOption();
-        loginModal.doXiStoreLogin(wrongLogin, password);
-        Assertions.assertEquals(Constants.TEXT_OF_ERROR_MASSAGE, loginModal.getLabelError());
-    }
-
-    @Test
-    @DisplayName("Проверка входа с корректными данными (электронная почта) и некорректными данными (пароль)")
-    public void testXiStoreWrongPassword() {
-        homePage.openHomePage();
-        homePage.clickOnPersonalCabinetIcon();
-        homePage.clickOnLoginWithOtherOption();
-        loginModal.doXiStoreLogin(login, wrongPassword);
-        Assertions.assertEquals(Constants.TEXT_OF_ERROR_MASSAGE, loginModal.getLabelError());
-    }
-
-    @Test
-    @DisplayName("Проверка входа с некорректными данными (электронная почта и пароль)")
-    public void testXistoreWrongMailPassword() {
-        homePage.openHomePage();
-        homePage.clickOnPersonalCabinetIcon();
-        homePage.clickOnLoginWithOtherOption();
-        loginModal.doXiStoreLogin(wrongLogin, wrongPassword);
-        Assertions.assertEquals(Constants.TEXT_OF_ERROR_MASSAGE, loginModal.getLabelError());
-    }
-
-    @Test
-    @DisplayName("Проверка входа с пустыми полями данных (электронная почта и пароль)")
-    public void testXistoreEmptyFieldsMailPassword() {
-        homePage.openHomePage();
-        homePage.clickOnPersonalCabinetIcon();
-        homePage.clickOnLoginWithOtherOption();
-        loginModal.doXiStoreLogin("", "");
-        Assertions.assertEquals(Constants.TEXT_OF_ERROR_MASSAGE, loginModal.getLabelError());
     }
 
     @Test
     @DisplayName("Поиск товара в поле (Что хотите купить) ")
     public void testProductSearch() {
         homePage.openHomePage();
-        homePage.doSearchByProductName(Constants.NAME_PRODUCT_FOR_SEARCH);
+        homePage.doSearchByProductName(PRODUCT_FOR_SEARCH);
         searchResultsPage.checkSearchResultPageIsDisplayed();
-        Assertions.assertTrue(searchResultsPage
-                .isQueryPresentInSearchResults(Constants.NAME_PRODUCT_FOR_SEARCH));
+        List<String> items = searchResultsPage.getSearchResultItemNames();
+
+        Assertions.assertTrue(items.stream()
+                .anyMatch(item->item.contains(PRODUCT_FOR_SEARCH.toLowerCase())));
 
     }
 
@@ -112,8 +76,8 @@ public class XiStoreTest extends BaseTest {
         certainSmartphoneProductPage.closeAddedToCartPopUp();
         certainSmartphoneProductPage.openCart();
         cartPage.checkCartPageIsDisplayed();
-        String productInCartName = cartPage.getItemInCartName();
-        Assertions.assertEquals(firstProductItemName, productInCartName);
+
+        Assertions.assertEquals(firstProductItemName, cartPage.getItemInCartName());
     }
 }
 

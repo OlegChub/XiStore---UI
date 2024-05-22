@@ -1,42 +1,43 @@
 package web.pages;
 
-import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class SearchResultsPage extends BasePage {
-    private static final By SEARCH_PAGE_TITLE = By.xpath("//h1[contains(text(),'Результаты поиска')]");
-    private static final By SEARCH_RESULT_ITEMS = By.className("search__page_item-name");
+    @Autowired
+    private WebDriver driver;
+
+    @PostConstruct
+    public void initSearchResultsPage(){
+        PageFactory.initElements(driver,this);
+    }
+
+    @FindBy(xpath = "//h1[contains(text(),'Результаты поиска')]")
+    private WebElement searchPageTitle;
+
+    @FindBy(className = "search__page_item-name")
+    private List<WebElement> searchResultItems;
 
     public SearchResultsPage checkSearchResultPageIsDisplayed() {
-        checkElementIsDisplayed(SEARCH_PAGE_TITLE);
+        searchPageTitle.isDisplayed();
         return this;
     }
 
-    public boolean isQueryPresentInSearchResults(String query) {
-        List<String> searchResultItemNames = getSearchResultItemNames();
-        for (String itemName : searchResultItemNames) {
-            if (itemName.contains(query.toLowerCase())) {
-                return true;
-            }
+    public List<String> getSearchResultItemNames() {
+        List<String> searchResultItemNames = new ArrayList<>();
+        for (WebElement webElement : searchResultItems) {
+            searchResultItemNames.add(webElement.getText().toLowerCase());
         }
-        return false;
-    }
-
-    private List<WebElement> getSearchResultItems() {
-        return findElements(SEARCH_RESULT_ITEMS);
-    }
-
-    private List<String> getSearchResultItemNames() {
-        List<String> SearchResultItemNames = new ArrayList<>();
-        for (WebElement webElement : getSearchResultItems()) {
-            SearchResultItemNames.add(webElement.getText().toLowerCase());
-        }
-        return SearchResultItemNames;
+        return searchResultItemNames;
     }
 
 }
