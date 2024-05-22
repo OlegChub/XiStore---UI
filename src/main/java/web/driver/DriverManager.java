@@ -29,31 +29,33 @@ public class DriverManager {
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     public WebDriver getDriver() {
-        switch (browser.toLowerCase()) {
-            case "edge":
-                LOGGER.info("Setting up Edge driver");
-                WebDriverManager.edgedriver().setup();
-                driver.set(new EdgeDriver(new EdgeOptions().addArguments("--remote-allow-origins=*")));
-                break;
+        if (driver.get() == null) {
+            switch (browser.toLowerCase()) {
+                case "edge":
+                    LOGGER.info("Setting up Edge driver");
+                    WebDriverManager.edgedriver().setup();
+                    driver.set(new EdgeDriver(new EdgeOptions().addArguments("--remote-allow-origins=*")));
+                    break;
 
-            case "firefox":
-                LOGGER.info("Setting up Firefox driver");
-                WebDriverManager.firefoxdriver().setup();
-                driver.set(new FirefoxDriver(new FirefoxOptions().addArguments("--remote-allow-origins=*")));
-                break;
-            case "chrome":
-            default:
-                LOGGER.info("Setting up Chrome driver");
-                WebDriverManager.chromedriver().setup();
-                driver.set(new ChromeDriver(new ChromeOptions().addArguments("--remote-allow-origins=*")));
-                break;
+                case "firefox":
+                    LOGGER.info("Setting up Firefox driver");
+                    WebDriverManager.firefoxdriver().setup();
+                    driver.set(new FirefoxDriver(new FirefoxOptions().addArguments("--remote-allow-origins=*")));
+                    break;
+                case "chrome":
+                default:
+                    LOGGER.info("Setting up Chrome driver");
+                    WebDriverManager.chromedriver().setup();
+                    driver.set(new ChromeDriver(new ChromeOptions().addArguments("--remote-allow-origins=*")));
+                    break;
+            }
+            LOGGER.info("Setting up options");
+            driver.get().manage().deleteAllCookies();
+            driver.get().manage().window().maximize();
+            driver.get().manage().timeouts().implicitlyWait(Duration.ofSeconds(20));
+            driver.get().manage().timeouts().pageLoadTimeout(Duration.ofSeconds(20));
+            LOGGER.info("Driver has been set up");
         }
-        LOGGER.info("Setting up options");
-        driver.get().manage().deleteAllCookies();
-        driver.get().manage().window().maximize();
-        driver.get().manage().timeouts().implicitlyWait(Duration.ofSeconds(20));
-        driver.get().manage().timeouts().pageLoadTimeout(Duration.ofSeconds(20));
-        LOGGER.info("Driver has been set up");
         return driver.get();
     }
 
